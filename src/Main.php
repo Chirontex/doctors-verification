@@ -6,6 +6,7 @@ namespace Chirontex\DocsVer;
 
 use Chirontex\DocsVer\Providers\StatusProvider;
 use Chirontex\DocsVer\Exceptions\MainException;
+use Chirontex\DocsVer\Exceptions\ExceptionsList;
 use CDatabase;
 
 class Main
@@ -18,8 +19,8 @@ class Main
     {
         
         if (empty($user_id)) throw new MainException(
-            'User is not authorized.',
-            -1
+            ExceptionsList::COMMON['user_not_authorized']['message'],
+            ExceptionsList::COMMON['user_not_authorized']['code']
         );
 
         $this->user_id = $user_id;
