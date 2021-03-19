@@ -1,20 +1,24 @@
 <?php
 /**
- * Doctors Verification 0.1.3 by Dmitry Shumilin
+ * Doctors Verification 0.1.5 by Dmitry Shumilin
  * License: GNU GPL v3, see LICENSE
  */
 namespace Chirontex\DocsVer;
 
 use Chirontex\DocsVer\Providers\Status;
+use Chirontex\DocsVer\Providers\Testing;
 use Chirontex\DocsVer\Exceptions\MainException;
+use Chirontex\DocsVer\Exceptions\StatusException;
 use Chirontex\DocsVer\Exceptions\ExceptionsList;
 use CDatabase;
 
-final class Main
+class Main
 {
 
+    protected $db;
     protected $user_id;
     protected $status_provider;
+    protected $status_data;
 
     public function __construct(int $user_id, CDatabase $db)
     {
@@ -26,29 +30,54 @@ final class Main
 
         $this->user_id = $user_id;
 
+        $this->db = $db;
+
         $this->status_provider = new Status($db);
 
-        $status = $this->status_provider->statusGet($this->user_id);
-
-        if (empty($status) ||
-            (int)$status['status'] === 0) $this->testing($status);
-        else echo $this->content();
+        $this->status_data = $this->status_provider->statusGet($this->user_id);
 
     }
 
-    public function testing(array $status) : self
+    /**
+     * Allow to check the content availability.
+     * 
+     * @return bool
+     */
+    public function isContentAvailable() : bool
     {
 
-        echo 'testing';
+        return !(empty($this->status_data) ||
+            (int)$this->status_data['status'] === 0);
+
+    }
+
+    public function testingInit() : self
+    {
+
+        $testing = new Testing($this->db);
+
+        $data = $testing->dataGet($this->user_id);
+
+        $data = empty($data) ?
+            $testing
+                ->dataCreate($this->user_id)
+                ->dataGet($this->user_id) :
+            $data;
+
+        $this->status_data = $this->status_provider
+            ->statusSet($this->user_id, 0)
+            ->statusGet($this->user_id);
+
+        echo 'Your status data:<br />';
+
+        var_dump($this->status_data);
+
+        echo '<br />';
+        echo 'Your testing data:<br />';
+
+        var_dump($data);
 
         return $this;
-
-    }
-
-    public function content() : string
-    {
-
-        return 'page content';
 
     }
 

@@ -116,20 +116,18 @@ class Status extends Provider
         if ($status < 1) $status = 0;
         else $status = 1;
 
-        if ($this->db->Insert(
-            $this->table,
-            [
-                'user_id' => $user_id,
-                'status' => $status,
-                'modified' => date("Y-m-d H:i:s")
-            ],
-            "",
-            false,
-            "",
+        if ($this->db->Query(
+            "INSERT INTO `".$this->table."`
+                (`user_id`, `status`, `modified`)
+                VALUES (
+                    '".$user_id."',
+                    '".$status."',
+                    '".date("Y-m-d H:i:s")."'
+                )",
             true
         ) === false) throw new StatusException(
             ExceptionsList::PROVIDERS['-13']['message'].
-                ' ('.__CLASS__.'::'.__METHOD__.')',
+                ' ('.__CLASS__.'::'.__METHOD__.'())',
             ExceptionsList::PROVIDERS['-13']['code']
         );
 
@@ -162,15 +160,11 @@ class Status extends Provider
         if ($status < 1) $status = 0;
         else $status = 1;
 
-        if ($this->db->Update(
-            $this->table,
-            [
-                'status' => $status,
-                'modified' => date("Y-m-d H:i:s")
-            ],
-            "user_id = '".$user_id."'",
-            "",
-            false,
+        if ($this->db->Query(
+            "UPDATE `".$this->table."` AS t
+                SET t.status = '".$status."',
+                    t.modified = '".date("Y-m-d H:i:s")."'
+                WHERE t.user_id = '".$user_id."'",
             true
         ) === false) throw new StatusException(
             ExceptionsList::PROVIDERS['-14']['message'].

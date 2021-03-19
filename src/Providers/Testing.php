@@ -86,19 +86,17 @@ class Testing extends Provider
             ExceptionsList::COMMON['-2']['code']
         );
 
-        if ($this->db->Insert(
-            $this->table,
-            [
-                'user_id' => $user_id,
-                'tries' => 3
-            ],
-            "",
-            false,
-            "",
+        if ($this->db->Query(
+            "INSERT INTO `".$this->table."`
+                (`user_id`, `tries`)
+                VALUES (
+                    '".$user_id."',
+                    '3'
+                )",
             true
         ) === false) throw new TestingException(
             ExceptionsList::PROVIDERS['-13']['message'].
-                ' ('.__CLASS__.'::'.__METHOD__.')',
+                ' ('.__CLASS__.'::'.__METHOD__.'())',
             ExceptionsList::PROVIDERS['-13']['code']
         );
 
@@ -130,12 +128,10 @@ class Testing extends Provider
         if ($tries < 0) $tries = 0;
         elseif ($tries > 3) $tries = 3;
 
-        if ($this->db->Update(
-            $this->table,
-            ['tries' => $tries],
-            "user_id = '".$user_id."'",
-            "",
-            false,
+        if ($this->db->Query(
+            "UPDATE `".$this->table."` AS t
+                SET t.tries = '".$tries."'
+                WHERE t.user_id = '".$user_id."'",
             true
         ) === false) throw new TestingException(
             ExceptionsList::PROVIDERS['-14']['message'].
