@@ -6,7 +6,7 @@ namespace Chirontex\DocsVer\Exceptions;
 
 use Exception;
 
-class StatusProviderException extends Exception
+class StatusException extends Exception
 {
 
     

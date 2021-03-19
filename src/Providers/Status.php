@@ -4,12 +4,12 @@
  */
 namespace Chirontex\DocsVer\Providers;
 
-use Chirontex\DocsVer\Exceptions\StatusProviderException;
+use Chirontex\DocsVer\Exceptions\StatusException;
 use Chirontex\DocsVer\Exceptions\ExceptionsList;
 use CDatabase;
 use CDBResult;
 
-class StatusProvider
+class Status
 {
 
     protected $db;
@@ -31,7 +31,7 @@ class StatusProvider
      * 
      * @return $this
      * 
-     * @throws Chirontex\DocsVer\Exceptions\StatusProviderException
+     * @throws Chirontex\DocsVer\Exceptions\StatusException
      */
     public function tableCreate() : self
     {
@@ -48,7 +48,7 @@ class StatusProvider
             COLLATE='utf8_unicode_ci'
             AUTO_INCREMENT=0",
             true
-        ) === false) throw new StatusProviderException(
+        ) === false) throw new StatusException(
             ExceptionsList::PROVIDERS['-11']['mesage'].
                 ' ("'.$this->table.'")',
             ExceptionsList::PROVIDERS['-11']['code']
@@ -67,16 +67,16 @@ class StatusProvider
      * 
      * @throws Chirontex\DocsVer\Exceptions\StatusProviderException
      */
-    public function statusGet(int $user_id) : int
+    public function statusGet(int $user_id) : array
     {
 
-        if ($user_id < 1) throw new StatusProviderException(
+        if ($user_id < 1) throw new StatusException(
             ExceptionsList::COMMON['-2']['message'],
             ExceptionsList::COMMON['-2']['code']
         );
 
         $select = $this->db->Query(
-            "SELECT t.status
+            "SELECT t.status, t.modified
                 FROM `".$this->table."` AS t
                 WHERE t.user_id = '".$user_id."'",
             true
@@ -84,18 +84,60 @@ class StatusProvider
 
         if ($select instanceof CDBResult) {
 
-            $result = 0;
-
             $row = $select->Fetch();
 
-            if (isset($row['status'])) $result = (int)$row['status'];
+            return $row === false ? [] : $row;
 
-            return $result;
-
-        } else throw new StatusProviderException(
+        } else throw new StatusException(
             ExceptionsList::PROVIDERS['-12']['message'],
             ExceptionsList::PROVIDERS['-12']['code']
         );
+
+    }
+
+    /**
+     * Set the status.
+     * 
+     * @param int $user_id
+     * User ID cannot be lesser than 1.
+     * 
+     * @param int $status
+     * If status < 1, it will be === 0.
+     * Otherwise === 1.
+     * 
+     * @return $this
+     * 
+     * @throws Chirontex\DocsVer\Exceptions\StatusProviderException
+     */
+    public function statusSet(int $user_id, int $status) : self
+    {
+
+        if ($user_id < 1) throw new StatusException(
+            ExceptionsList::COMMON['-2']['message'],
+            ExceptionsList::COMMON['-2']['code']
+        );
+
+        if ($status < 1) $status = 0;
+        else $status = 1;
+
+        if ($this->db->Insert(
+            $this->table,
+            [
+                'user_id' => $user_id,
+                'status' => $status,
+                'modified' => date("Y-m-d H:i:s")
+            ],
+            "",
+            false,
+            "",
+            true
+        ) === false) throw new StatusException(
+            ExceptionsList::PROVIDERS['-13']['message'].
+                ' ('.__CLASS__.'::'.__METHOD__.')',
+            ExceptionsList::PROVIDERS['-13']['code']
+        );
+
+        return $this;
 
     }
 

@@ -1,11 +1,11 @@
 <?php
 /**
- * Doctors Verification 0.0.6 by Dmitry Shumilin
+ * Doctors Verification 0.0.7 by Dmitry Shumilin
  * License: GNU GPL v3, see LICENSE
  */
 namespace Chirontex\DocsVer;
 
-use Chirontex\DocsVer\Providers\StatusProvider;
+use Chirontex\DocsVer\Providers\Status;
 use Chirontex\DocsVer\Exceptions\MainException;
 use Chirontex\DocsVer\Exceptions\ExceptionsList;
 use CDatabase;
@@ -26,7 +26,7 @@ class Main
 
         $this->user_id = $user_id;
 
-        $this->status_provider = new StatusProvider($db);
+        $this->status_provider = new Status($db);
 
     }
 

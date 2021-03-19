@@ -26,6 +26,10 @@ class ExceptionsList
         '-12' => [
             'message' => 'Selection query returns false.',
             'code' => -12
+        ],
+        '-13' => [
+            'message' => 'Entry insertion failure.',
+            'code' => -13
         ]
     ];
 
