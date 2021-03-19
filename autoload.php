@@ -1,7 +1,6 @@
 <?php
 /**
- * Doctors Verification 0.0.5 by Dmitry Shumilin
- * License: GNU GPL v3, see LICENSE
+ * Doctors Verification
  */
 spl_autoload_register(function($classname) {
 

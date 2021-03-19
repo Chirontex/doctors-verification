@@ -8,22 +8,22 @@ class ExceptionsList
 {
 
     const COMMON = [
-        'user_not_authorized' => [
+        '-1' => [
             'message' => 'User is not authorized.',
             'code' => -1
         ],
-        'invalid_user_id' => [
+        '-2' => [
             'message' => 'User ID cannot be lesser than 1.',
             'code' => -2
         ]
     ];
 
     const PROVIDERS = [
-        'table_creation_failure' => [
+        '-11' => [
             'message' => 'Table creation failure.',
             'code' => -11
         ],
-        'select_failure' => [
+        '-12' => [
             'message' => 'Selection query returns false.',
             'code' => -12
         ]

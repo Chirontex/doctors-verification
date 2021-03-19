@@ -1,6 +1,7 @@
 <?php
 /**
- * Doctors Verification
+ * Doctors Verification 0.0.6 by Dmitry Shumilin
+ * License: GNU GPL v3, see LICENSE
  */
 namespace Chirontex\DocsVer;
 
@@ -19,8 +20,8 @@ class Main
     {
         
         if (empty($user_id)) throw new MainException(
-            ExceptionsList::COMMON['user_not_authorized']['message'],
-            ExceptionsList::COMMON['user_not_authorized']['code']
+            ExceptionsList::COMMON['-1']['message'],
+            ExceptionsList::COMMON['-1']['code']
         );
 
         $this->user_id = $user_id;

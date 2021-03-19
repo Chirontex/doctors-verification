@@ -49,9 +49,9 @@ class StatusProvider
             AUTO_INCREMENT=0",
             true
         ) === false) throw new StatusProviderException(
-            ExceptionsList::PROVIDERS['table_creation_failure']['mesage'].
+            ExceptionsList::PROVIDERS['-11']['mesage'].
                 ' ("'.$this->table.'")',
-            ExceptionsList::PROVIDERS['table_creation_failure']['code']
+            ExceptionsList::PROVIDERS['-11']['code']
         );
 
         return $this;
@@ -71,8 +71,8 @@ class StatusProvider
     {
 
         if ($user_id < 1) throw new StatusProviderException(
-            ExceptionsList::COMMON['invalid_user_id']['message'],
-            ExceptionsList::COMMON['invalid_user_id']['code']
+            ExceptionsList::COMMON['-2']['message'],
+            ExceptionsList::COMMON['-2']['code']
         );
 
         $select = $this->db->Query(
@@ -93,8 +93,8 @@ class StatusProvider
             return $result;
 
         } else throw new StatusProviderException(
-            ExceptionsList::PROVIDERS['select_failure']['message'],
-            ExceptionsList::PROVIDERS['select_failure']['code']
+            ExceptionsList::PROVIDERS['-12']['message'],
+            ExceptionsList::PROVIDERS['-12']['code']
         );
 
     }
