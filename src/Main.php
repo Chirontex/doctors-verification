@@ -1,6 +1,6 @@
 <?php
 /**
- * Doctors Verification 0.0.7 by Dmitry Shumilin
+ * Doctors Verification 0.0.8 by Dmitry Shumilin
  * License: GNU GPL v3, see LICENSE
  */
 namespace Chirontex\DocsVer;
@@ -10,7 +10,7 @@ use Chirontex\DocsVer\Exceptions\MainException;
 use Chirontex\DocsVer\Exceptions\ExceptionsList;
 use CDatabase;
 
-class Main
+final class Main
 {
 
     protected $user_id;
@@ -27,6 +27,28 @@ class Main
         $this->user_id = $user_id;
 
         $this->status_provider = new Status($db);
+
+        $status = $this->status_provider->statusGet($this->user_id);
+
+        if (empty($status) ||
+            (int)$status['status'] === 0) $this->testing($status);
+        else echo $this->content();
+
+    }
+
+    public function testing(array $status) : self
+    {
+
+        echo 'testing';
+
+        return $this;
+
+    }
+
+    public function content() : string
+    {
+
+        return 'page content';
 
     }
 

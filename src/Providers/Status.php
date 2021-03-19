@@ -76,7 +76,7 @@ class Status
         );
 
         $select = $this->db->Query(
-            "SELECT t.status, t.modified
+            "SELECT *
                 FROM `".$this->table."` AS t
                 WHERE t.user_id = '".$user_id."'",
             true
