@@ -9,52 +9,25 @@ use Chirontex\DocsVer\Exceptions\ExceptionsList;
 use CDatabase;
 use CDBResult;
 
-class Status
+class Status extends Provider
 {
-
-    protected $db;
-    protected $table;
 
     public function __construct(CDatabase $db)
     {
-        
-        $this->db = $db;
 
         $this->table = 'docsver_status';
 
-        $this->tableCreate();
+        $this->columns = [
+            'user_id' => 'BIGINT NOT NULL',
+            'status' => 'TINYINT NOT NULL DEFAULT 0',
+            'modified' => 'DATETIME NOT NULL'
+        ];
 
-    }
+        $this->indexes = [
+            'user_id' => 'UNIQUE INDEX'
+        ];
 
-    /**
-     * Create the provider table.
-     * 
-     * @return $this
-     * 
-     * @throws Chirontex\DocsVer\Exceptions\StatusException
-     */
-    public function tableCreate() : self
-    {
-
-        if ($this->db->Query(
-            "CREATE TABLE IF NOT EXISTS `".$this->table."` (
-                `id` BIGINT NOT NULL AUTO_INCREMENT,
-                `user_id` BIGINT NOT NULL,
-                `status` TINYINT NOT NULL DEFAULT 0,
-                `modified` DATETIME NOT NULL,
-                PRIMARY KEY (`id`),
-                UNIQUE INDEX `user_id` (`user_id`)
-            )
-            COLLATE='utf8_unicode_ci'
-            AUTO_INCREMENT=0",
-            true
-        ) === false) throw new StatusException(
-            ExceptionsList::PROVIDERS['-11']['mesage'].
-                ' ("'.$this->table.'")',
-            ExceptionsList::PROVIDERS['-11']['code']
-        );
-
-        return $this;
+        parent::__construct($db);
 
     }
 
