@@ -18,8 +18,8 @@ class Status extends Provider
         $this->table = 'docsver_status';
 
         $this->columns = [
-            'user_id' => 'BIGINT NOT NULL',
-            'status' => 'TINYINT NOT NULL DEFAULT 0',
+            'user_id' => 'BIGINT UNSIGNED NOT NULL',
+            'status' => 'TINYINT UNSIGNED NOT NULL DEFAULT 0',
             'modified' => 'DATETIME NOT NULL'
         ];
 

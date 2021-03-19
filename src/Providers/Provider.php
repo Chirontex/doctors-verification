@@ -66,7 +66,7 @@ abstract class Provider
 
         if ($this->db->Query(
             "CREATE TABLE IF NOT EXISTS `".$this->table."` (
-                `id` BIGINT NOT NULL AUTO_INCREMENT".$columns.",
+                `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT".$columns.",
                 PRIMARY KEY (`id`)".$indexes."
             )
             COLLATE='utf8_unicode_ci'
