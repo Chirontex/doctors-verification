@@ -1,6 +1,6 @@
 <?php
 /**
- * Doctors Verification 0.0.8 by Dmitry Shumilin
+ * Doctors Verification 0.0.9 by Dmitry Shumilin
  * License: GNU GPL v3, see LICENSE
  */
 namespace Chirontex\DocsVer;

@@ -30,6 +30,10 @@ class ExceptionsList
         '-13' => [
             'message' => 'Entry insertion failure.',
             'code' => -13
+        ],
+        '-14' => [
+            'message' => 'Entry updating failure.',
+            'code' => -14
         ]
     ];
 

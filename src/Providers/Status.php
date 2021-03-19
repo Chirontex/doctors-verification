@@ -112,6 +112,29 @@ class Status
     public function statusSet(int $user_id, int $status) : self
     {
 
+        return empty($this->statusGet($user_id)) ?
+            $this->statusInsert($user_id, $status) :
+            $this->statusUpdate($user_id, $status);
+
+    }
+
+    /**
+     * Insert the status.
+     * 
+     * @param int $user_id
+     * User ID cannot be lesser than 1.
+     * 
+     * @param int $status
+     * If status < 1, it will be === 0.
+     * Otherwise === 1.
+     * 
+     * @return $this
+     * 
+     * @throws Chirontex\DocsVer\Exceptions\StatusProviderException
+     */
+    protected function statusInsert(int $user_id, int $status) : self
+    {
+
         if ($user_id < 1) throw new StatusException(
             ExceptionsList::COMMON['-2']['message'],
             ExceptionsList::COMMON['-2']['code']
@@ -135,6 +158,51 @@ class Status
             ExceptionsList::PROVIDERS['-13']['message'].
                 ' ('.__CLASS__.'::'.__METHOD__.')',
             ExceptionsList::PROVIDERS['-13']['code']
+        );
+
+        return $this;
+
+    }
+
+    /**
+     * Update the status.
+     * 
+     * @param int $user_id
+     * User ID cannot be lesser than 1.
+     * 
+     * @param int $status
+     * If status < 1, it will be === 0.
+     * Otherwise === 1.
+     * 
+     * @return $this
+     * 
+     * @throws Chirontex\DocsVer\Exceptions\StatusProviderException
+     */
+    protected function statusUpdate(int $user_id, int $status) : self
+    {
+
+        if ($user_id < 1) throw new StatusException(
+            ExceptionsList::COMMON['-2']['message'],
+            ExceptionsList::COMMON['-2']['code']
+        );
+
+        if ($status < 1) $status = 0;
+        else $status = 1;
+
+        if ($this->db->Update(
+            $this->table,
+            [
+                'status' => $status,
+                'modified' => date("Y-m-d H:i:s")
+            ],
+            "user_id = '".$user_id."'",
+            "",
+            false,
+            true
+        ) === false) throw new StatusException(
+            ExceptionsList::PROVIDERS['-14']['message'].
+                ' ('.__CLASS__.'::'.__METHOD__.')',
+            ExceptionsList::PROVIDERS['-14']['code']
         );
 
         return $this;
