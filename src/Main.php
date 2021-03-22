@@ -1,6 +1,6 @@
 <?php
 /**
- * Doctors Verification 0.1.7 by Dmitry Shumilin
+ * Doctors Verification 0.2.0 by Dmitry Shumilin
  * License: GNU GPL v3, see LICENSE
  */
 namespace Chirontex\DocsVer;
@@ -124,14 +124,73 @@ class Main
     protected function testingProcess() : self
     {
 
-        echo 'Your status data:<br />';
+        $questions = [];
+
+        for ($i = 0; $i < 3; $i++) {
+
+            do {
+
+                $r = rand(0, count(Questions::ITEMS) - 1);
+
+            } while (array_search($r, $questions) !== false);
+
+            $questions[] = $r;
+
+        }
+
+        ob_start();
+
+?>
+<h2 style="text-align: center;">Пожалуйста, пройдите тест.</h2>
+<p>Нам необходимо произвести проверку Вашей принадлежности к медицинскому сообществу.</p>
+<form action="" method="post">
+<?php
+
+        for ($i = 0; $i < count($questions); $i++) {
+
+?>
+    <div>
+        <h3><?= htmlspecialchars(Questions::ITEMS[$questions[$i]]['title']) ?></h3>
+<?php
+
+            foreach (Questions::ITEMS[$questions[$i]]['answers'] as $key => $answer) {
+
+?>
+        <p><input type="radio" name="question_<?= $questions[$i] ?>" id="question_<?= $questions[$i] ?>" value="<?= $key ?>" required="true"<?= $key === 0 ? 'checked="true"' : '' ?>> <?= htmlspecialchars($answer) ?></p>
+<?php
+
+            }
+
+?>
+    </div>
+<?php
+
+        }
+
+        $questions = implode('-', $questions);
+
+?>
+    <input type="hidden" name="questions" value="<?= $questions ?>">
+    <button type="submit">Отправить</button>
+</form>
+<?php
+
+        echo ob_get_clean();
+
+        $this->status_provider->statusSet(
+            $this->user_id,
+            (int)$this->status_data['status'],
+            $questions
+        );
+
+        /*echo 'Your status data:<br />';
 
         var_dump($this->status_data);
 
         echo '<br />';
         echo 'Your testing data:<br />';
 
-        var_dump($this->testing_data);
+        var_dump($this->testing_data);*/
 
         return $this;
 

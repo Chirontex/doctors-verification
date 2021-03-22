@@ -20,7 +20,8 @@ class Status extends Provider
         $this->columns = [
             'user_id' => 'BIGINT UNSIGNED NOT NULL',
             'status' => 'TINYINT UNSIGNED NOT NULL DEFAULT 0',
-            'modified' => 'DATETIME NOT NULL'
+            'modified' => 'DATETIME NOT NULL',
+            'last_questions' => 'VARCHAR (128)'
         ];
 
         $this->indexes = [
@@ -78,16 +79,19 @@ class Status extends Provider
      * If status < 1, it will be === 0.
      * Otherwise === 1.
      * 
+     * @param string $last_questions
+     * Info about last testing questions.
+     * 
      * @return $this
      * 
      * @throws Chirontex\DocsVer\Exceptions\StatusProviderException
      */
-    public function statusSet(int $user_id, int $status) : self
+    public function statusSet(int $user_id, int $status, string $last_questions = '') : self
     {
 
         return empty($this->statusGet($user_id)) ?
-            $this->statusInsert($user_id, $status) :
-            $this->statusUpdate($user_id, $status);
+            $this->statusInsert($user_id, $status, $last_questions) :
+            $this->statusUpdate($user_id, $status, $last_questions);
 
     }
 
@@ -101,11 +105,14 @@ class Status extends Provider
      * If status < 1, it will be === 0.
      * Otherwise === 1.
      * 
+     * @param string $last_questions
+     * Info about last testing questions.
+     * 
      * @return $this
      * 
      * @throws Chirontex\DocsVer\Exceptions\StatusProviderException
      */
-    protected function statusInsert(int $user_id, int $status) : self
+    protected function statusInsert(int $user_id, int $status, string $last_questions = '') : self
     {
 
         if ($user_id < 1) throw new StatusException(
@@ -118,11 +125,12 @@ class Status extends Provider
 
         if ($this->db->Query(
             "INSERT INTO `".$this->table."`
-                (`user_id`, `status`, `modified`)
+                (`user_id`, `status`, `modified`, `last_questions`)
                 VALUES (
                     '".$user_id."',
                     '".$status."',
-                    '".date("Y-m-d H:i:s")."'
+                    '".date("Y-m-d H:i:s")."',
+                    '".$last_questions."'
                 )",
             true
         ) === false) throw new StatusException(
@@ -145,11 +153,14 @@ class Status extends Provider
      * If status < 1, it will be === 0.
      * Otherwise === 1.
      * 
+     * @param string $last_questions
+     * Info about last testing questions.
+     * 
      * @return $this
      * 
      * @throws Chirontex\DocsVer\Exceptions\StatusProviderException
      */
-    protected function statusUpdate(int $user_id, int $status) : self
+    protected function statusUpdate(int $user_id, int $status, string $last_questions = '') : self
     {
 
         if ($user_id < 1) throw new StatusException(
@@ -163,7 +174,8 @@ class Status extends Provider
         if ($this->db->Query(
             "UPDATE `".$this->table."` AS t
                 SET t.status = '".$status."',
-                    t.modified = '".date("Y-m-d H:i:s")."'
+                    t.modified = '".date("Y-m-d H:i:s")."',
+                    t.last_questions = '".$last_questions."'
                 WHERE t.user_id = '".$user_id."'",
             true
         ) === false) throw new StatusException(
