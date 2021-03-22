@@ -1,6 +1,6 @@
 <?php
 /**
- * Doctors Verification 0.2.0 by Dmitry Shumilin
+ * Doctors Verification 0.2.1 by Dmitry Shumilin
  * License: GNU GPL v3, see LICENSE
  */
 namespace Chirontex\DocsVer;
@@ -121,6 +121,11 @@ class Main
 
     }
 
+    /**
+     * Select questions and output the test.
+     * 
+     * @return $this
+     */
     protected function testingProcess() : self
     {
 
@@ -156,7 +161,7 @@ class Main
             foreach (Questions::ITEMS[$questions[$i]]['answers'] as $key => $answer) {
 
 ?>
-        <p><input type="radio" name="question_<?= $questions[$i] ?>" id="question_<?= $questions[$i] ?>" value="<?= $key ?>" required="true"<?= $key === 0 ? 'checked="true"' : '' ?>> <?= htmlspecialchars($answer) ?></p>
+        <p><input type="radio" name="docsver_question_<?= $questions[$i] ?>" id="docsver_question_<?= $questions[$i] ?>" value="<?= $key ?>" required="true"<?= $key === 0 ? 'checked="true"' : '' ?>> <?= htmlspecialchars($answer) ?></p>
 <?php
 
             }
@@ -170,7 +175,7 @@ class Main
         $questions = implode('-', $questions);
 
 ?>
-    <input type="hidden" name="questions" value="<?= $questions ?>">
+    <input type="hidden" name="docsver_questions" value="<?= $questions ?>">
     <button type="submit">Отправить</button>
 </form>
 <?php
