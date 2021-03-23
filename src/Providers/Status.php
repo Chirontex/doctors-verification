@@ -115,6 +115,8 @@ class Status extends Provider
     protected function statusInsert(int $user_id, int $status, string $last_questions = '') : self
     {
 
+        date_default_timezone_set('Europe/Moscow');
+
         if ($user_id < 1) throw new StatusException(
             ExceptionsList::COMMON['-2']['message'],
             ExceptionsList::COMMON['-2']['code']
@@ -163,6 +165,8 @@ class Status extends Provider
     protected function statusUpdate(int $user_id, int $status, string $last_questions = '') : self
     {
 
+        date_default_timezone_set('Europe/Moscow');
+
         if ($user_id < 1) throw new StatusException(
             ExceptionsList::COMMON['-2']['message'],
             ExceptionsList::COMMON['-2']['code']
@@ -171,11 +175,14 @@ class Status extends Provider
         if ($status < 1) $status = 0;
         else $status = 1;
 
+        $setting_lq = "";
+
+        if (!empty($last_questions)) $setting_lq = ", t.last_questions = '".$last_questions."'";
+
         if ($this->db->Query(
             "UPDATE `".$this->table."` AS t
                 SET t.status = '".$status."',
-                    t.modified = '".date("Y-m-d H:i:s")."',
-                    t.last_questions = '".$last_questions."'
+                    t.modified = '".date("Y-m-d H:i:s")."'".$setting_lq."
                 WHERE t.user_id = '".$user_id."'",
             true
         ) === false) throw new StatusException(

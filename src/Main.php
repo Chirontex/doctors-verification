@@ -1,6 +1,6 @@
 <?php
 /**
- * Doctors Verification 0.2.1 by Dmitry Shumilin
+ * Doctors Verification 0.2.5 by Dmitry Shumilin
  * License: GNU GPL v3, see LICENSE
  */
 namespace Chirontex\DocsVer;
@@ -53,6 +53,8 @@ class Main
                 ->dataGet($this->user_id) :
             $this->testing_data;
 
+        if (isset($_POST['docsver_questions'])) $this->testingCheck();
+
     }
 
     /**
@@ -77,6 +79,8 @@ class Main
     public function testingInit() : self
     {
 
+        date_default_timezone_set('Europe/Moscow');
+
         $day_passed = (time() - strtotime(
             $this->status_data['modified']
         )) >= 86400;
@@ -93,9 +97,9 @@ class Main
             !$day_passed) $this->testingDeny();
         elseif ((int)$this->testing_data['tries'] > 0) {
 
-            $this->status_data = $this->status_provider
+            /*$this->status_data = $this->status_provider
                 ->statusSet($this->user_id, 0)
-                ->statusGet($this->user_id);
+                ->statusGet($this->user_id);*/
 
             $this->testing_provider->dataUpdate(
                 $this->user_id,
@@ -112,10 +116,21 @@ class Main
 
     }
 
+    /**
+     * Called if the user is not allowed to testing.
+     * 
+     * @return $this
+     */
     protected function testingDeny() : self
     {
 
-        echo 'Вы исчерпали свои попытки пройти тест за эти сутки.';
+        ob_start();
+
+?>
+<p>Вы исчерпали суточное количество попыток пройти тест. Попробуйте завтра.</p>
+<?php
+
+        echo ob_get_clean();
 
         return $this;
 
@@ -146,8 +161,8 @@ class Main
         ob_start();
 
 ?>
-<h2 style="text-align: center;">Пожалуйста, пройдите тест.</h2>
-<p>Нам необходимо произвести проверку Вашей принадлежности к медицинскому сообществу.</p>
+<p style="margin-top: 1rem; margin-bottom: 1rem;">Нам необходимо произвести проверку Вашей принадлежности к медицинскому сообществу.<br />Пожалуйста, ответьте на нижеприведённые вопросы в течение трёх минут.</p>
+<p>Осталось времени: <span id="docsver-timer">03:00</span></p>
 <form action="" method="post">
 <?php
 
@@ -178,24 +193,73 @@ class Main
     <input type="hidden" name="docsver_questions" value="<?= $questions ?>">
     <button type="submit">Отправить</button>
 </form>
+<script src="<?= empty($_SERVER['HTTPS']) ? 'http' : 'https' ?>://<?= $_SERVER['HTTP_HOST'] ?>/doctors-verification/js/script.js?ver=1.0.5"></script>
 <?php
 
         echo ob_get_clean();
 
-        $this->status_provider->statusSet(
+        $this->status_data = $this->status_provider->statusSet(
             $this->user_id,
             (int)$this->status_data['status'],
             $questions
-        );
+        )->statusGet($this->user_id);
 
-        /*echo 'Your status data:<br />';
+        return $this;
 
-        var_dump($this->status_data);
+    }
 
-        echo '<br />';
-        echo 'Your testing data:<br />';
+    /**
+     * Check the answers.
+     * 
+     * @return $this
+     */
+    protected function testingCheck() : self
+    {
 
-        var_dump($this->testing_data);*/
+        date_default_timezone_set('Europe/Moscow');
+
+        $check = false;
+
+        if ($_POST['docsver_questions'] ===
+            $this->status_data['last_questions']) {
+
+            $check = true;
+
+            if (time() - strtotime($this->status_data['modified']) < 180) {
+
+                $questions = explode('-', $_POST['docsver_questions']);
+
+                foreach ($questions as $key) {
+
+                    if ((int)$_POST['docsver_question_'.$key] !==
+                        Questions::ITEMS[$key]['right']) {
+
+                        $check = false;
+
+                        break;
+
+                    }
+
+                }
+
+            } else $check = false;
+
+        }
+
+        if ($check) $this->status_data = $this->status_provider
+            ->statusSet($this->user_id, 1)
+            ->statusGet($this->user_id);
+        elseif ($this->testing_data['tries'] > 0) {
+
+            ob_start();
+
+?>
+<p style="color: red;">Вы не прошли тест. Попробуйте ещё раз.</p>
+<?php
+
+            echo ob_get_clean();
+
+        }
 
         return $this;
 
